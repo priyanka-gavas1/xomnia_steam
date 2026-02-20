@@ -44,15 +44,14 @@ models:
     z_example:
       +materialized: table
     bronze:
-      +schema: "{{ env_var('DBT_ENV_NM') }}_bronze"
+      +schema: "bronze"
     silver:
-      +schema: "{{ env_var('DBT_ENV_NM') }}_silver"
+      +schema: "silver"
     gold:
-      +schema: "{{ env_var('DBT_ENV_NM') }}_gold"
+      +schema: "gold"
     mart:
-      +schema: "{{ env_var('DBT_ENV_NM') }}_mart"
+      +schema: "mart"
 
 seeds:
   my_new_project:
-    seeds:
-      +schema: "{{ env_var('DBT_ENV_NM') }}_bronze"
+    +schema: "bronze"
