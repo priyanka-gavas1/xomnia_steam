@@ -1,0 +1,14 @@
+version: "1"
+context:
+  active-host: "jc639.us1.dbt.com"
+  active-project: "70471823555423"
+projects:
+  - project-name: "xomnia_steam"
+    project-id: "70471823555423"
+    account-name: "NA"
+    account-id: "70471823535522"
+    account-host: "jc639.us1.dbt.com"
+    token-name: "cloud-cli-2c35"
+    token-value: "dbtu_eaBj4eQ3acUjA73LNxQO84A6iAV1Nsfz6QqlLmuoU85zLDOKZ8"
+
+
