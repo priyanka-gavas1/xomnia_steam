@@ -13,7 +13,7 @@ jobs:
     env:
       GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-key.json
       DBT_PROFILES_DIR: ${{ github.workspace }}
-      DBT_ENV_NM: "dev"
+      DBT_ENV_NM: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
 
     steps:
       - name: Checkout repo
