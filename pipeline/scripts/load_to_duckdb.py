@@ -1,3 +1,6 @@
+import os
+os.chdir(os.getenv("GITHUB_WORKSPACE", "."))
+
 import duckdb
 from pathlib import Path
 
@@ -23,14 +26,8 @@ for file in RAW_DIR.glob("*.csv"):
         INSERT INTO bronze_flatfile_data (flatfile_name, app_id, flatfile_content)
         SELECT
             '{flatfile_name}',
-            CASE
-                WHEN instr(line, ',') = 0 THEN line
-                ELSE split_part(line, ',', 1)
-            END,
-            CASE
-                WHEN instr(line, ',') = 0 THEN NULL
-                ELSE substr(line, instr(line, ',') + 1)
-            END
+            CASE WHEN instr(line, ',') = 0 THEN line ELSE split_part(line, ',', 1) END,
+            CASE WHEN instr(line, ',') = 0 THEN NULL ELSE substr(line, instr(line, ',') + 1) END
         FROM read_csv_auto('{file}', columns={{'line': 'TEXT'}}, ignore_errors=true);
     """)
 
