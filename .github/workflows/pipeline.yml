@@ -1,0 +1,41 @@
+name: Steam Bronze Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "pipeline/raw_files/**"
+
+jobs:
+  bronze-pipeline:
+    runs-on: ubuntu-latest
+
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-key.json
+      DBT_PROFILES_DIR: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install google-cloud-bigquery dbt-bigquery
+
+      - name: Write GCP credentials
+        run: |
+          echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > gcp-key.json
+
+      - name: Run ingestion script
+        run: |
+          python pipeline/scripts/ingest_flatfiles.py
+
+      - name: Run dbt build
+        run: |
+          dbt deps
+          dbt build
