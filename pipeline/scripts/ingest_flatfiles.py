@@ -59,12 +59,31 @@ def load_rows_to_bigquery(rows: List[Dict]):
     if not rows:
         return
 
+    import csv
+    from tempfile import NamedTemporaryFile
+
+    # Write rows to a temporary CSV file
+    with NamedTemporaryFile(mode="w", delete=False, suffix=".csv") as tmp:
+        writer = csv.writer(tmp)
+        writer.writerow(["flatfile_name", "app_id", "flatfile_content"])  # header
+        for r in rows:
+            writer.writerow([r["flatfile_name"], r["app_id"], r["flatfile_content"]])
+        temp_file_path = tmp.name
+
     client = bigquery.Client(project=PROJECT_ID)
     table_ref = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}"
 
-    errors = client.insert_rows_json(table_ref, rows)
-    if errors:
-        raise RuntimeError(f"BigQuery insert errors: {errors}")
+    job_config = bigquery.LoadJobConfig(
+        source_format=bigquery.SourceFormat.CSV,
+        skip_leading_rows=1,
+        autodetect=False,
+        write_disposition="WRITE_APPEND",
+    )
+
+    with open(temp_file_path, "rb") as f:
+        load_job = client.load_table_from_file(f, table_ref, job_config=job_config)
+
+    load_job.result()  # Wait for job to finish
 
 
 def main():
