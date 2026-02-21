@@ -1,0 +1,12 @@
+default:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: xomnia-steam
+      dataset: dev_bronze
+      keyfile: gcp-key.json
+      threads: 4
+      timeout_seconds: 300
+      location: EU
