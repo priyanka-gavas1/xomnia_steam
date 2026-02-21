@@ -1,0 +1,31 @@
+name: duckdb_ingestion
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install DuckDB
+        run: pip install duckdb
+
+      - name: Run ingestion script
+        run: python pipeline/scripts/load_to_duckdb.py
+
+      - name: Upload DuckDB file
+        uses: actions/upload-artifact@v3
+        with:
+          name: steam-duckdb
+          path: pipeline/duckdb/steam.duckdb
