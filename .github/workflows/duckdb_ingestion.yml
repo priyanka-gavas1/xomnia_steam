@@ -18,20 +18,23 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Install DuckDB CLI
+        run: sudo apt-get update && sudo apt-get install -y duckdb
+
       - name: Install DuckDB
         run: pip install duckdb
 
       - name: Run ingestion script
         run: python pipeline/scripts/load_to_duckdb.py
-      
+        working-directory: ${{ github.workspace }}
+
       - name: Debug file structure
-        run: |
-          echo "Listing repo root:"
-          ls -R .
+        run: ls -R .
+        working-directory: ${{ github.workspace }}
 
       - name: Inspect DuckDB inside runner
-        run: |
-          duckdb pipeline/duckdb/steam.duckdb "SELECT 'TABLES:', * FROM duckdb_tables();"
+        run: duckdb pipeline/duckdb/steam.duckdb "SELECT * FROM duckdb_tables();"
+        working-directory: ${{ github.workspace }}
 
       - name: Upload DuckDB file
         uses: actions/upload-artifact@v4
